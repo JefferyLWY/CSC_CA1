@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        .title {
+            text-align: center;
+        }
+        .container {
+            padding: 16px;
+            border: 2px solid #f1f1f1;
+            width: 50%;
+            margin: 0px auto;
+        }
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #0099ff;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        #reset {
+            width: 20%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="title">
+        <h1 id="status"></h1>
+        <button id="reset" name="sub" class="page">Logout</button>
+    </div>
+    <br />
+    <div class="container" id="login">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" class="text" />
+
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" class="text" />
+
+        <button id="submit" name="sub" class="page">Request Token</button>
+
+        <hr />
+        <a href="values.html">Access secret content :)</a>
+    </div>
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="lib/jquery-cookie/jquery.cookie.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            checkLogin()
+            $('#submit').click(GetToken);
+            $('#reset').click(function () {
+                $.cookie("access_token", null);
+                checkLogin()
+            });
+        });
+
+        function GetToken(e) {
+
+            var username = $("input#username").val();
+            var password = $("input#password").val();
+
+            function make_base_auth(user, password) {
+                var tok = user + ':' + password;
+                var hash = Base64.encode(tok);
+                return "Basic " + hash;
+            }
+
+            $.ajax
+                ({
+                    type: "GET",
+                    url: "api/tokens",
+                    tryCount: 0,
+                    retryLimit: 3,
+                    headers: {
+                        "Authorization": "Basic " + btoa(username + ":" + password)
+                    }
+                }).done(function (data) {
+                    $.cookie("access_token", data, { expires: 15 / 1440 });
+                    $.cookie("username", username, { expires: 15 / 1440 });
+                    checkLogin()
+                }).fail(function (error) {
+                    console.log(error)
+                });
+        }
+
+        function checkLogin() {
+            if ($.cookie("access_token") == "null") {
+                $("#status").text("Please login")
+                $("#reset").hide()
+            } else {
+                $("#status").text("Welcome " + $.cookie("username"))
+                $("#reset").show()
+            }
+        }
+    </script>
+</body>
+</html>

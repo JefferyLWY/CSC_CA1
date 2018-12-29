@@ -1,0 +1,187 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Get weather</title>
+    <style>
+        h1 {
+            color: #0099ff;
+        }
+        #table {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 50%;
+            margin: 0px auto;
+        }
+
+        #table td, #table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #table tr:hover {
+            background-color: #ddd;
+        }
+
+        #table th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: center;
+            background-color: #0099ff;
+            color: white;
+        }
+    </style>
+</head>
+<body style="text-align: center">
+    <h1>Weather Archives</h1>
+    <hr />
+    <form id="form" runat="server">
+        <div>
+            <br />
+            <label for="search">City: </label>
+            <input style="min-width:200px" type="text" id="search" value="Singapore" />
+            <label for="search">Date: </label>
+            <input type="date" id="date" value="2018-12-25">
+            <input type="submit" id="btnLocationSearchPremium" value="Search" />
+            <br /><br />
+            <div id="resultContainer">
+            </div>
+            <h2 id="loading" hidden>Loading...</h2>
+        </div>
+    </form>
+
+
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+        var resultContainer = $('#resultContainer');
+        var output = '';
+        
+
+        $(document).ready(function () {
+            $('#loading').bind('ajaxStart', function () {
+                $(this).show();
+            }).bind('ajaxStop', function () {
+                $(this).hide();
+            });
+
+            $(function () {
+                var dtToday = new Date();
+
+                var month = dtToday.getMonth() + 1;
+                var day = dtToday.getDate();
+                var year = dtToday.getFullYear();
+
+                if (month < 10)
+                    month = '0' + month.toString();
+                if (day < 10)
+                    day = '0' + day.toString();
+
+                var maxDate = year + '-' + month + '-' + day;
+                $('#date').attr('max', maxDate);
+            });
+
+            $('#btnLocationSearchPremium').click(PastWeather);
+        });
+
+        var _PremiumApiKey = '40129ca249944dd99de80820181611';
+        var _PremiumApiBaseURL = 'https://api.worldweatheronline.com/premium/v1/';
+
+        function PastWeather(e) {
+            var pastWeatherInput = {
+                query: document.getElementById('search').value,
+                format: 'JSON',
+                date: document.getElementById('date').value,
+                callback: 'PastWeatherCallback'
+            };
+
+            JSONP_PastWeather(pastWeatherInput);
+            e.preventDefault();
+        }
+
+        function PastWeatherCallback(pastWeather) {
+            if (pastWeather.data.hasOwnProperty('error')) {
+                resultContainer.text("Invalid City")
+            } else {
+                var result = pastWeather.data.weather[0];
+
+                var content =
+                    "<table class='table-fill' id='table'><thead><tr>" +
+                    "<th>Attribute</th>" +
+                    "<th>Value</th>" +
+                    "</tr></thead><tbody class='table-hover'>" +
+                    "<tr><td class='text-left'>Location</td>" +
+                    "<td class='text-left'>" +
+                    pastWeather.data.request[0].query + "</td>" +
+                    "</tr>" +
+                    "<tr><td class='text-left'>Date</td>" +
+                    "<td class='text-left'>" +
+                    result.date + "</td>" +
+                    "</tr>" +
+                    "<tr><td class='text-left'>Max Temp (C)</td>" +
+                    "<td class='text-left'>" +
+                    result.maxtempC + "</td>" +
+                    "</tr>" +
+                    "<tr><td class='text-left'>Min Temp (C)</td>" +
+                    "<td class='text-left'>" +
+                    result.mintempC + "</td>" +
+                    "</tr>" +
+                    "<tr><td class='text-left'>Sun Hour (Hrs)</td>" +
+                    "<td class='text-left'>" +
+                    result.sunHour + "</td>" +
+                    "</tr>" +
+                    "<tr><td class='text-left'>Sunrise</td>" +
+                    "<td class='text-left'>" +
+                    result.astronomy[0].sunrise + "</td>" +
+                    "</tr>" +
+                    "<tr><td class='text-left'>Sunset</td>" +
+                    "<td class='text-left'>" +
+                    result.astronomy[0].sunset + "</td>" +
+                    "</tr>" +
+                    "</tbody></table><br>";
+
+                resultContainer.empty();
+                resultContainer.html(content);
+            }
+        }
+
+        function JSONP_PastWeather(input) {
+            var url = _PremiumApiBaseURL + "past-weather.ashx?q=" + input.query + "&format=" + input.format +
+                "&date=" + input.date + "&key=" + _PremiumApiKey;
+
+            jsonP(url, input.callback);
+        }
+
+        function jsonP(url, callback) {
+            $.ajax({
+                type: 'GET',
+                url: url,
+                async: false,
+                contentType: "application/json",
+                jsonpCallback: callback,
+                dataType: 'jsonp',
+                tryCount: 0,
+                retryLimit: 3,
+                success: function (json) {
+                    console.dir('success');
+                },
+                error: function (e) {
+                    if (textStatus == 'timeout') {
+                        this.tryCount++;
+                        if (this.tryCount <= this.retryLimit) {
+                            $.ajax(this);
+                            return;
+                        }
+                        return;
+                    }
+                    console.log(e.message);
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

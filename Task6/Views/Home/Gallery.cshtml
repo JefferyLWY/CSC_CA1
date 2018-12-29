@@ -1,0 +1,12 @@
+﻿@model Task6.Models.ViewImage
+
+@foreach (var image in Model.Images)
+{
+<div class="gallery">
+    <a asp-action="Payment" asp-route-Id="@image.Id">
+        <img class="card-img-top" src="@image.Url" alt="@image.Name">
+    </a>
+    <div class="desc"><strong>@image.Name</strong></div>
+    <div class="desc">$@image.Price</div>
+</div>    
+}  

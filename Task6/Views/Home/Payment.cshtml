@@ -1,0 +1,24 @@
+﻿@using Microsoft.Extensions.Options
+@using Task6.PaymentServices
+@inject IOptions<StripeSettings> Stripe
+@model Task6.Models.Image
+
+
+<div style="padding:10px; margin:5px;">
+    <a href="@Model.Url" style="float: left; padding-right:20px;">
+        <img class="card-img-top" src="@Model.Url" alt="@Model.Name">
+    </a>
+    <div style="padding:10px; margin:5px;">
+        <h1>@Model.Name</h1>
+        <form action="/Home/Charge" method="POST">
+            <label style="font-size: 15px;">Amount: $@Model.Price</label>
+            <br />
+            <script src="//checkout.stripe.com/v2/checkout.js"
+                    class="stripe-button"
+                    data-key="@Stripe.Value.PublishableKey"
+                    data-description="ASP .Net Core Stripe"
+                    data-amount="@(Model.Price*100)">
+            </script>
+        </form>
+    </div>
+</div>

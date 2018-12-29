@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <h2>All Products</h2>
+        <ul id="products" />
+    </div>
+    <div>
+        <h2>Search by ID</h2>
+        <input type="text" id="prodId" size="5" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="product" />
+    </div>  
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script>
+        var uri = 'api/products';
+        $.getJSON(uri).done(function (data) {
+                $.each(data, function (key, item) {
+                    $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+            });
+        }).fail(function () {
+            $('#products').text('Error');
+        });
+
+        function formatItem(item) {
+            return item.name + ': $' + item.price;
+        }
+
+        function find() {
+            var id = $('#prodId').val();
+            $.getJSON(uri + '/' + id)
+                .done(function (data) {
+                    $('#product').text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus) {
+                    $('#product').text('Invalid Id');
+                });
+        }
+    </script>
+</body>
+</html>
