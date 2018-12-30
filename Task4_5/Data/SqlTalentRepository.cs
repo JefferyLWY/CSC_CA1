@@ -28,7 +28,11 @@ namespace Task4_5.Data
         public void Put(int inputId, Talent inputTalent)
         {
             Talent talent = _context.Talents.FirstOrDefault(x => x.Id == inputId);
-            if (talent != null) talent = inputTalent;
+            if (talent != null)
+            {
+                _context.Talents.Remove(talent);
+                _context.Talents.Add(inputTalent);
+            }
             _context.SaveChanges();
         }
         public void Delete(int inputId)

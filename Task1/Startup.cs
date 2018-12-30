@@ -40,10 +40,21 @@ namespace Task1
                 app.UseHsts();
             }
 
+            //App Middleware
             app.UseFileServer();
 
-            app.UseCors(options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            //CORS
+            app.UseCors(options =>
+                options
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
 
+            //Default Middleware
+            app.UseDefaultFiles(new DefaultFilesOptions
+            {
+                DefaultFileNames = new List<string> { "Index.html" }
+            });
         }
     }
 }

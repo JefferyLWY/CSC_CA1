@@ -13,6 +13,5 @@ namespace Task2.Data
         Product Add(Product item);
         void Remove(int id);
         bool Update(Product item);
-
     }
 }

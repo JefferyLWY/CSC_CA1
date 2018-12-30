@@ -13,25 +13,25 @@ namespace Task3.UserData
             new User
             {
                 Id = 1,
-                Username = "Alice",
-                Password = "123",
-                FirstName = "Alice",
+                Username = "Jeremy",
+                Password = "password",
+                FirstName = "Jeremy",
                 LastName = "InWonderland",
-                FullName = "Alice InWonderland",
+                FullName = "Jeremy InWonderland",
                 Email = "NaughtyRabbit@Email.com",
-                Address = "WonderLand",
-                IsAdmin = true
+                Address = "WonderLand"
             },
             new User
             {
                 Id = 2,
-                Username = "Bob",
-                Password = "123",
-                FirstName = "Bob",
-                LastName = "TheBuilder",
-                FullName = "Bob TheBuilder",
-                Email = "CanWeFixIt@Email.com",
-                Address = "Fixtown"
+                Username = "Jack",
+                Password = "password",
+                FirstName = "Jack",
+                LastName = "TheDebugger",
+                FullName = "Bob TheDebugger",
+                Email = "CanWeDebugIt@Email.com",
+                Address = "NoBugTown",
+                IsAdmin = true
             }
         };
 
@@ -41,8 +41,11 @@ namespace Task3.UserData
             userList.Add(inputUser);
             users = userList.ToArray();
         }
+
         public User[] GetAll() => users;
+
         public User Get(int inputId) => users.FirstOrDefault(u => u.Id == inputId);
+
         public User Get(string username, string password)
         {
             User returnedUser =
@@ -51,6 +54,7 @@ namespace Task3.UserData
                  select u).FirstOrDefault();
             return returnedUser;
         }
+
         public void Put(int inputId, User inputUser)
         {
             users = users
@@ -62,6 +66,7 @@ namespace Task3.UserData
                 }
                 ).ToArray();
         }
+
         public void Delete(int inputId)
         {
             users = users.Where(u => u.Id != inputId).ToArray();

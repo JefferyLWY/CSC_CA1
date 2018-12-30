@@ -26,6 +26,8 @@ namespace Task3.Controllers
             tokenSymmetricKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["tokenSymmetricKey"]));
         }
 
+        #region Token Controllers
+        //1. Get User Token
         [HttpGet, AllowAnonymous]
         public IActionResult RequestToken()
         {
@@ -65,25 +67,30 @@ namespace Task3.Controllers
             catch (Exception) { return StatusCode(500); }
         }
 
+        //2. Check Token Validity
         [HttpGet, Route("checkToken"), Authorize]
         public IActionResult CheckToken()
         {
             return Ok("Token is valid.");
         }
 
+        //3. Check Admin Role
         [HttpGet, Route("checkAdmin"), Authorize(Policy = "AdminOnly")]
         public IActionResult CheckAdmin()
         {
             return Ok("Token has administrative powers.");
         }
 
+        //4. Get Token Info
         [HttpGet, Route("getTokenInfo"), Authorize]
         public IEnumerable GetTokenInfo()
         {
             string token = Request.Headers["Authorization"].ToString().Split(' ')[1];
             return decodeToken(token);
         }
+        #endregion
 
+        #region Token Generator
         private string generateToken(User inputUser)
         {
             List<Claim> claimDataRaw = new List<Claim>();
@@ -124,5 +131,6 @@ namespace Task3.Controllers
             }
             return tokenInfo.ToArray();
         }
+        #endregion
     }
 }

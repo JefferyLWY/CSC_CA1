@@ -21,14 +21,12 @@ namespace Task2
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -40,21 +38,23 @@ namespace Task2
                 app.UseHsts();
             }
 
+            //App Middleware
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseMvc();
             
+            //CORS
             app.UseCors(options =>
                 options
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
 
-
+            //Default Middleware
             app.UseDefaultFiles(new DefaultFilesOptions
             {
-                DefaultFileNames = new List<string> { "Index.html" }
+                DefaultFileNames = new List<string> { "index.html" }
             });
         }
     }

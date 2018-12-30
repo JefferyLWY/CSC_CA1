@@ -16,47 +16,43 @@ namespace Task3.Controllers
     {
         private IUserRepository userRepository = new UserRepository();
 
-        #region UsersController - Crud Methods
-        //Create Method
+        #region User Controllers
+        //1. Get Users
+        [HttpGet, Route("{inputId:int:min(1)}")]
+        public User GetUser(int inputId) => userRepository.Get(inputId);
+
+        //2. Get User by Id
+        [HttpGet]
+        public IEnumerable<User> GetAllUsers() => userRepository.GetAll();
+
+        //3. Create User
         [HttpPost, Authorize(Policy = "AdminOnly")]
         public IActionResult PostUser(User inputUser)
         {
             try
             {
-                #region PostUser - Model Validation
                 if (!ModelState.IsValid) { return BadRequest("Invalid object as parameter."); }
-                #endregion
-                #region PostUser - Conflict Validation
+
                 User tempUser = userRepository.Get(inputUser.Id);
                 if (tempUser != null) { return Conflict("User with the id of " + inputUser.Id + " already exists."); }
-                #endregion
-                #region PostUser - Data Processing
+
                 userRepository.Post(inputUser);
                 return Ok("User with the id of " + inputUser.Id + " was successfully created.");
-                #endregion
             }
             catch (Exception) { return StatusCode(500); }
         }
 
-        //Read Methods
-        [HttpGet, Route("{inputId:int:min(1)}")]
-        public User GetUser(int inputId) => userRepository.Get(inputId);
-        [HttpGet]
-        public IEnumerable<User> GetAllUsers() => userRepository.GetAll();
-
-        //Update Method
+        //4. Update User
         [HttpPut, Route("{inputId:int:min(1)}"), Authorize(Policy = "AdminOnly")]
         public IActionResult PutUser(int inputId, User inputUser)
         {
             try
             {
-                #region PutUser - Model Validation
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid object as parameter.");
                 }
-                #endregion
-                #region PutUser - Content Validation
+
                 User tempUser = userRepository.Get(inputId);
                 if (tempUser == null) { return NotFound("User with the id of " + inputUser.Id + " does not exist."); }
                 if (tempUser.Id != inputUser.Id)
@@ -64,32 +60,28 @@ namespace Task3.Controllers
                     tempUser = userRepository.Get(inputUser.Id);
                     if (tempUser != null) { return Conflict("Potential conflict of proposed Id detected."); }
                 }
-                #endregion
-                #region PutUser - Data Processing
+
                 userRepository.Put(inputId, inputUser);
                 return Ok("User with the id of " + inputUser.Id + " was successfully updated.");
-                #endregion
             }
             catch (Exception) { return StatusCode(500); }
         }
 
-        //Delete Method
+        //4. Delete User
         [HttpDelete, Route("{inputId:int:min(1)}"), Authorize(Policy = "AdminOnly")]
         public IActionResult DeleteUser(int inputId)
         {
             try
             {
-                #region DeleteUser - Content Validation
                 User tempUser = userRepository.Get(inputId);
                 if (tempUser == null)
                 {
                     return NotFound("User with the id of " + inputId + " does not exist.");
                 }
-                #endregion
-                #region DeleteUser - Data Processing
+
                 userRepository.Delete(inputId);
                 return Ok("User with the id of " + inputId + " was successfully deleted.");
-                #endregion
+
             }
             catch (Exception) { return StatusCode(500); }
         }

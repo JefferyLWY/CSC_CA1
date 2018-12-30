@@ -14,30 +14,38 @@ namespace Task2.Controllers
     {
         static readonly IProductRepository productRepository = new ProductRepository();
 
+        #region GET Controllers
+        //1. Returns list of products 
+        //Load balance work since a slight delay in one thread will not cause cascading delays throughout
         [HttpGet]
-        public IEnumerable<Product> GetProducts()
+        public async Task<IEnumerable<Product>> GetProducts()
         {
-            return productRepository.GetAll();
+            return await Task.FromResult(productRepository.GetAll());
         }
 
+        //2. Returns selected product
         [HttpGet, Route("{id:int}")]
-        public IActionResult GetProduct(int id)
+        public async Task<IActionResult> GetProduct(int id)
         {
             Product item = productRepository.Get(id);
             if (item == null)
             {
-                return NotFound();
+                return await Task.FromResult(NotFound());
             }
-            return Ok(item);
+            return await Task.FromResult(Ok(item));
         }
 
+        //3. Returns product of selected category
         [HttpGet, Route("{category}")]
-        public IEnumerable<Product> GetProductsByCategory(string category)
+        public async Task<IEnumerable<Product>> GetProductsByCategory(string category)
         {
-            return productRepository.GetAll()
-                .Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase));
+            return await Task.FromResult(productRepository.GetAll()
+                .Where(p => string.Equals(p.Category, category, StringComparison.OrdinalIgnoreCase)));
         }
+        #endregion
 
+        #region POST Controller
+        //4. Create product
         [HttpPost]
         public IActionResult CreateProduct(Product item)
         {
@@ -51,7 +59,10 @@ namespace Task2.Controllers
                 return BadRequest("Invalid object as parameter.");
             }
         }
+        #endregion
 
+        #region PUT Controller
+        //5. Updates product
         [HttpPut, Route("{id:int}")]
         public IActionResult UpdateProduct(int id, Product item)
         {
@@ -69,7 +80,10 @@ namespace Task2.Controllers
             }
             return Ok("Item succesfully updated");
         }
+        #endregion
 
+        #region Delete Controller
+        //6. Delete product
         [HttpDelete, Route("{id:int}")]
         public IActionResult DeleteProduct(int id)
         {
@@ -82,6 +96,7 @@ namespace Task2.Controllers
             productRepository.Remove(id);
             return Ok("Item succesfully deleted");
         }
+        #endregion
 
     }
 

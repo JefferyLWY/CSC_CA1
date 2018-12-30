@@ -50,24 +50,26 @@
             <br /><br />
             <div id="resultContainer">
             </div>
-            <h2 id="loading" hidden>Loading...</h2>
         </div>
     </form>
 
 
     <script src="lib/jquery/jquery.min.js"></script>
     <script type="text/javascript">
+
+        //Initialize Elements
         var resultContainer = $('#resultContainer');
         var output = '';
-        
 
         $(document).ready(function () {
+            //Loading animation
             $('#loading').bind('ajaxStart', function () {
                 $(this).show();
             }).bind('ajaxStop', function () {
                 $(this).hide();
             });
 
+            //Set Max date
             $(function () {
                 var dtToday = new Date();
 
@@ -90,6 +92,7 @@
         var _PremiumApiKey = '40129ca249944dd99de80820181611';
         var _PremiumApiBaseURL = 'https://api.worldweatheronline.com/premium/v1/';
 
+        //Configure API call
         function PastWeather(e) {
             var pastWeatherInput = {
                 query: document.getElementById('search').value,
@@ -102,6 +105,7 @@
             e.preventDefault();
         }
 
+        //Ajax Callback function
         function PastWeatherCallback(pastWeather) {
             if (pastWeather.data.hasOwnProperty('error')) {
                 resultContainer.text("Invalid City")
@@ -148,6 +152,7 @@
             }
         }
 
+        //Construct URL
         function JSONP_PastWeather(input) {
             var url = _PremiumApiBaseURL + "past-weather.ashx?q=" + input.query + "&format=" + input.format +
                 "&date=" + input.date + "&key=" + _PremiumApiKey;
@@ -155,6 +160,7 @@
             jsonP(url, input.callback);
         }
 
+        //Calls Web Service
         function jsonP(url, callback) {
             $.ajax({
                 type: 'GET',
@@ -168,7 +174,7 @@
                 success: function (json) {
                     console.dir('success');
                 },
-                error: function (e) {
+                error: function (xhr, textStatus, errorThrown ) {
                     if (textStatus == 'timeout') {
                         this.tryCount++;
                         if (this.tryCount <= this.retryLimit) {

@@ -47,17 +47,20 @@ namespace Task4_5
                 app.UseHsts();
             }
 
+            //App Middleware
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseMvc();
 
+            //CORS
             app.UseCors(options =>
                 options
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
 
+            //Static File Server
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(
@@ -65,6 +68,7 @@ namespace Task4_5
                 RequestPath = "/wwwroot",
                 EnableDirectoryBrowsing = true
             });
+
             app.UseFileServer(new FileServerOptions
             {
                 FileProvider = new PhysicalFileProvider(

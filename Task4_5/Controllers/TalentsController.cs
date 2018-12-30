@@ -20,7 +20,20 @@ namespace Task4_5.Controllers
             this.talentRepository = talentRepository;
         }
 
-        //Create Method
+        #region API Controllers
+        //1. Get Talents
+        [HttpGet]
+        public IEnumerable<Talent> GetAllTalents()
+        {
+            //System.Threading.Thread.Sleep(1500);
+            return talentRepository.GetAll();
+        }
+
+        //2. Get Talent by Id
+        [HttpGet, Route("{Id:int:min(1)}")]
+        public Talent GetTalent(int Id) => talentRepository.Get(Id);
+
+        //3. Create Talent
         [HttpPost]
         public IActionResult PostTalent(Talent inputTalent)
         {
@@ -29,28 +42,17 @@ namespace Task4_5.Controllers
                 if (!ModelState.IsValid) { return BadRequest("Invalid object as parameter."); }
 
                 Talent tempTalent = talentRepository.Get(inputTalent.Id);
-                if (tempTalent != null) { return Conflict("Talent with the id of " + inputTalent.Id + " already exists."); }
+                if (tempTalent != null) { return Conflict("Talent " + inputTalent.Id + " already exists."); }
 
                 talentRepository.Post(inputTalent);
-                return Ok("Talent with the id of " + inputTalent.Id + " was successfully created.");
+                return Ok("Talent " + inputTalent.Id + " was successfully created.");
             }
             catch (Exception) { return StatusCode(500); }
         }
 
-        //Read Methods
-        [HttpGet, Route("{inputId:int:min(1)}")]
-        public Talent GetTalent(int inputId) => talentRepository.Get(inputId);
-
-        [HttpGet]
-        public IEnumerable<Talent> GetAllTalents()
-        {
-            System.Threading.Thread.Sleep(1500);
-            return talentRepository.GetAll();
-        }
-
-        //Update Method
-        [HttpPut, Route("{inputId:int:min(1)}")]
-        public IActionResult PutTalent(int inputId, Talent inputTalent)
+        //4. Update Talent
+        [HttpPut, Route("{Id:int:min(1)}")]
+        public IActionResult PutTalent(int Id, Talent newTalent)
         {
             try
             {
@@ -59,21 +61,22 @@ namespace Task4_5.Controllers
                     return BadRequest("Invalid object as parameter.");
                 }
 
-                Talent tempTalent = talentRepository.Get(inputId);
-                if (tempTalent == null) { return NotFound("Talent with the id of " + inputTalent.Id + " does not exist."); }
-                if (tempTalent.Id != inputTalent.Id)
-                {
-                    tempTalent = talentRepository.Get(inputTalent.Id);
-                    if (tempTalent != null) { return Conflict("Potential conflict of proposed Id detected."); }
+                Talent oldTalent = talentRepository.Get(Id);
+                if (oldTalent == null) {
+                    return NotFound("Talent with the id of " + newTalent.Id + " does not exist.");
+                }
+
+                if (oldTalent.Id != newTalent.Id) {
+                    return Conflict("Id Mismatch.");
                 }
                 
-                talentRepository.Put(inputId, inputTalent);
-                return Ok("Talent with the id of " + inputTalent.Id + " was successfully updated.");
+                talentRepository.Put(Id, newTalent);
+                return Ok("Talent " + newTalent.Id + " was successfully updated.");
             }
             catch (Exception) { return StatusCode(500); }
         }
 
-        //Delete Method
+        //4. Delete Talent
         [HttpDelete, Route("{inputId:int:min(1)}")]
         public IActionResult DeleteTalent(int inputId)
         {
@@ -82,12 +85,13 @@ namespace Task4_5.Controllers
                 Talent tempTalent = talentRepository.Get(inputId);
                 if (tempTalent == null)
                 {
-                    return NotFound("Talent with the id of " + inputId + " does not exist.");
+                    return NotFound("Talent " + inputId + " does not exist.");
                 }
                 talentRepository.Delete(inputId);
-                return Ok("Talent with the id of " + inputId + " was successfully deleted.");
+                return Ok("Talent " + inputId + " was successfully deleted.");
             }
             catch (Exception) { return StatusCode(500); }
         }
+        #endregion
     }
 }

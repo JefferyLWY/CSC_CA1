@@ -10,6 +10,7 @@ namespace Task6.Data
     {
         List<Image> _images;
 
+        //Information about Talent Images
         public ImageRepository()
         {
             _images = new List<Image>
@@ -26,7 +27,7 @@ namespace Task6.Data
                     Id = 1,
                     Name = "Constance Smith",
                     Url = "https://s3.amazonaws.com/jefferycscca1/image/Constance_Smith_tn.jpg",
-                    Price = 10
+                    Price = 15
                 },
                 new Image
                 {

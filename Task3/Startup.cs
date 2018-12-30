@@ -22,6 +22,7 @@ namespace Task3
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Configure JWT Authentication
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options =>
                 {
@@ -38,6 +39,7 @@ namespace Task3
                 }
             );
 
+            //Adding Admin Policy
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminOnly", policy => policy.RequireClaim("IsAdmin"));
@@ -58,18 +60,21 @@ namespace Task3
                 app.UseHsts();
             }
 
+            //App Middleware
             app.UseAuthentication();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseMvc();
 
+            //CORS
             app.UseCors(options =>
                 options
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod());
 
+            //Default Middleware
             app.UseDefaultFiles(new DefaultFilesOptions
             {
                 DefaultFileNames = new List<string> { "index.html" }

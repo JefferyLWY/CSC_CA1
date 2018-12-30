@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace Task6.Models
 {
-    public class ViewImage
+    public class ImageViewModel
     {
         public IEnumerable<Image> Images { get; set; }
+        public string Message { get; set; }
     }
 }

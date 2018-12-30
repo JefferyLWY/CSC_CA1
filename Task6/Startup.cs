@@ -34,11 +34,14 @@ namespace Task6
 
             services.AddSingleton<IImageRepository, ImageRepository>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            //Configure Stripe Payment Services
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            //Configure Stripe API Key
             StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
 
             if (env.IsDevelopment())
@@ -51,10 +54,19 @@ namespace Task6
                 app.UseHsts();
             }
 
+            //App Middleware
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            //CORS
+            app.UseCors(options =>
+                options
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
+
+            //Default Middleware
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
